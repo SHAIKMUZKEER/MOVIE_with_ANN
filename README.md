@@ -874,62 +874,90 @@ Model    → Backend Service
 
 # 📁 Proposed Project Structure
 
-```text
-movie-recommendation-system/
+Movie-Recommendation-System/
 │
-├── backend/
-│   │
-│   ├── app/
-│   │   ├── main.py
-│   │   │
-│   │   ├── database/
-│   │   │   ├── connection.py
-│   │   │   └── models.py
-│   │   │
-│   │   ├── routes/
-│   │   │   ├── auth.py
-│   │   │   ├── movies.py
-│   │   │   ├── ratings.py
-│   │   │   └── recommendations.py
-│   │   │
-│   │   ├── services/
-│   │   │   ├── auth_service.py
-│   │   │   ├── movie_service.py
-│   │   │   ├── rating_service.py
-│   │   │   └── recommendation_service.py
-│   │   │
-│   │   └── ml/
-│   │       ├── model.py
-│   │       ├── predict.py
-│   │       └── model.keras
-│   │
-│   ├── requirements.txt
-│   └── .env
+├── artifacts/                              # Generated ML artifacts
+│   ├── movie_recommendation_model.keras    # Trained neural network
+│   ├── user_encoder.pkl                    # User ID mapping/encoder
+│   ├── movie_encoder.pkl                   # Movie ID mapping/encoder
+│   └── model_metadata.pkl                  # Model-related metadata
 │
-├── frontend/
-│   │
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── services/
-│   │   └── App.jsx
-│   │
-│   ├── package.json
-│   └── vite.config.js
+├── data/                                   # Dataset files
+│   ├── movie_data.csv                      # movie_id, title
+│   └── user_data.csv                       # user_id, movie_id, rating
 │
-├── data/
-│   ├── movies.csv
-│   └── ratings.csv
+├── notebooks/                              # Experimentation
+│   ├── 01_EDA.ipynb
+│   ├── 02_Data_Preprocessing.ipynb
+│   ├── 03_Model_Architecture.ipynb
+│   └── 04_Model_Training.ipynb
 │
-├── notebooks/
-│   └── movie_recommendation.ipynb
+├── src/
+│   │
+│   ├── __init__.py
+│   │
+│   ├── components/                         # Core ML components
+│   │   ├── __init__.py
+│   │   ├── data_ingestion.py               # Load datasets
+│   │   ├── data_transformation.py          # Preprocessing/encoding
+│   │   └── model_trainer.py                # Build & train model
+│   │
+│   ├── pipeline/                           # ML pipelines
+│   │   ├── __init__.py
+│   │   ├── train_pipeline.py               # Complete training pipeline
+│   │   └── predict_pipeline.py             # Prediction/recommendation pipeline
+│   │
+│   ├── database/                            # Database layer
+│   │   ├── __init__.py
+│   │   ├── connection.py                    # MySQL connection
+│   │   ├── models.py                        # Database models
+│   │   └── queries.py                       # SQL queries
+│   │
+│   ├── services/                            # Application business logic
+│   │   ├── __init__.py
+│   │   ├── auth_service.py                  # Signup/login logic
+│   │   ├── movie_service.py                 # Movie operations
+│   │   ├── rating_service.py                # Rating operations
+│   │   └── recommendation_service.py        # Recommendation logic
+│   │
+│   ├── routes/                              # API routes
+│   │   ├── __init__.py
+│   │   ├── auth_routes.py
+│   │   ├── movie_routes.py
+│   │   ├── rating_routes.py
+│   │   └── recommendation_routes.py
+│   │
+│   ├── logger.py
+│   ├── exception.py
+│   ├── utils.py
+│   └── constants.py
 │
 ├── scripts/
-│   └── import_data.py
+│   ├── import_data.py                       # CSV → MySQL
+│   └── initialize_database.py               # Create/initialize DB
 │
+├── templates/                               # If using server-rendered frontend
+│   ├── index.html
+│   ├── login.html
+│   ├── signup.html
+│   ├── movies.html
+│   └── recommendations.html
+│
+├── static/
+│   ├── css/
+│   │   └── style.css
+│   ├── js/
+│   │   └── app.js
+│   └── images/
+│
+├── app.py                                   # Main application entry point
+│
+├── requirements.txt
+├── setup.py
+├── README.md
+├── .env                                     # MySQL/API secrets
 ├── .gitignore
-└── README.md
-```
+└── venv/                                    # Don't push to GitHub
 
 ---
 
