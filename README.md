@@ -874,6 +874,7 @@ Model    → Backend Service
 
 # 📁 Proposed Project Structure
 
+```text
 Movie-Recommendation-System/
 │
 ├── artifacts/                              # Generated ML artifacts
@@ -959,6 +960,7 @@ Movie-Recommendation-System/
 ├── .gitignore
 └── venv/                                    # Don't push to GitHub
 
+```
 ---
 
 # 🔄 End-to-End Data Flow
