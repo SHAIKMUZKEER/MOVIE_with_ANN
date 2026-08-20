@@ -1,0 +1,14 @@
+numpy
+pandas 
+matplotlib
+seaborn 
+scikit-learn 
+fastapi 
+tensorflow
+python-dotenv
+mysql-connector-python
+uvicorn[standard]
+sqlalchemy
+pymysql
+pydantic
+email-validator

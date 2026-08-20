@@ -8,5 +8,5 @@ class CustomException(Exception):
         self.filename = exc_tb.tb_frame.f_code.co_filename
 
     def __str__(self):
-        return f"Error occurs in file {self.filename} at line number {self.linenumber} with error message of {self.error_message}"
+        return f"Error occurs in file {self.filename} at line number {self.line_number} with error message of {self.error_message}"
 

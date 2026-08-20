@@ -12,5 +12,9 @@ import pandas as pd
 
 
 ##importing the movie_data to test the column is present or not 
-movie_data = pd.read_csv("movie_data.csv")
-print(movie_data.columns)
+# movie_data = pd.read_csv("movie_data.csv")
+# print(movie_data.columns)
+
+
+user_data = pd.read_csv("user_data.csv")
+print(user_data.head())
