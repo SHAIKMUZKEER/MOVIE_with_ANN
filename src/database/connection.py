@@ -1,11 +1,14 @@
 import os
 import sys
+from src.logger import logging
+
 from src.exception import CustomException 
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy import URL
 from sqlalchemy.orm import sessionmaker, declarative_base
 
+logging.info("enters into database connection file")
 
 ## loading the env file for the database details
 load_dotenv(".env")

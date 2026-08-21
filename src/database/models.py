@@ -1,10 +1,10 @@
 from datetime import datetime
-
+from src.logger import logging
 from sqlalchemy import (
     Column,
     Integer,
     String,
-    Float,
+    Numeric,
     DateTime,
     ForeignKey,
     Enum
@@ -14,6 +14,7 @@ from sqlalchemy.orm import relationship
 
 from .connection import Base
 
+logging.info("enters into models file")
 
 class User(Base):
 
@@ -91,6 +92,7 @@ class Rating(Base):
 
     ratings_id = Column(
         Integer,
+        autoincrement=True,
         primary_key=True,
         index=True
     )
@@ -108,7 +110,7 @@ class Rating(Base):
     )
 
     ratings = Column(
-        Float,
+        Numeric(2,1),
         nullable=False
     )
 
