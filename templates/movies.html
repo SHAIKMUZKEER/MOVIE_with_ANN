@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Movie Universe</title>
+
+    <link
+        rel="stylesheet"
+        href="/static/css/movies.css"
+    >
+</head>
+
+<body>
+
+    <!-- ========================================= -->
+    <!-- BACKGROUND -->
+    <!-- ========================================= -->
+
+    <div class="background">
+
+        <div class="orb orb-one"></div>
+        <div class="orb orb-two"></div>
+        <div class="orb orb-three"></div>
+
+    </div>
+
+
+    <!-- ========================================= -->
+    <!-- NAVBAR -->
+    <!-- ========================================= -->
+
+    <nav class="navbar">
+
+        <div class="logo">
+            <span class="logo-icon">🎬</span>
+            <span>Movie<span class="logo-highlight">Verse</span></span>
+        </div>
+
+        <div class="nav-links">
+
+            <a href="/">Home</a>
+
+            <a
+                href="/movies"
+                class="active"
+            >
+                Movies
+            </a>
+
+            <a href="/recommendations">
+                Recommendations
+            </a>
+
+        </div>
+
+        <div class="nav-user">
+
+            <span id="userStatus">
+                Guest
+            </span>
+
+            <button
+                id="logoutBtn"
+                class="logout-btn"
+            >
+                Logout
+            </button>
+
+        </div>
+
+    </nav>
+
+
+    <!-- ========================================= -->
+    <!-- MAIN -->
+    <!-- ========================================= -->
+
+    <main class="movie-container">
+
+        <!-- HERO -->
+
+        <section class="hero-section">
+
+            <div class="hero-content">
+
+                <p class="eyebrow">
+                    YOUR MOVIE UNIVERSE
+                </p>
+
+                <h1>
+                    Discover.
+                    <span>Rate.</span>
+                    Enjoy.
+                </h1>
+
+                <p class="hero-description">
+                    Search thousands of movies, choose your
+                    favorites and build your personal rating
+                    profile.
+                </p>
+
+            </div>
+
+            <div class="hero-card">
+
+                <div class="floating-film">
+                    🎞️
+                </div>
+
+                <div class="hero-card-title">
+                    MOVIE
+                </div>
+
+                <div class="hero-card-subtitle">
+                    DISCOVERY
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ========================================= -->
+        <!-- SEARCH -->
+        <!-- ========================================= -->
+
+        <section class="search-section">
+
+            <div class="section-label">
+                <span></span>
+                FIND A MOVIE
+            </div>
+
+            <div class="search-wrapper">
+
+                <span class="search-icon">
+                    🔍
+                </span>
+
+                <input
+                    type="text"
+                    id="movieSearch"
+                    placeholder="Search for a movie..."
+                    autocomplete="off"
+                >
+
+                <button
+                    id="clearSearch"
+                    class="clear-btn"
+                >
+                    ×
+                </button>
+
+            </div>
+
+            <p class="search-hint">
+                Try searching for
+                <span>Titanic</span>,
+                <span>Inception</span>,
+                <span>Avatar</span>...
+            </p>
+
+        </section>
+
+
+        <!-- ========================================= -->
+        <!-- MOVIE RESULTS -->
+        <!-- ========================================= -->
+
+        <section>
+
+            <div class="results-header">
+
+                <div>
+                    <p class="section-label">
+                        <span></span>
+                        MOVIES
+                    </p>
+
+                    <h2>
+                        Choose your movie
+                    </h2>
+                </div>
+
+                <div id="resultCount">
+                    Loading...
+                </div>
+
+            </div>
+
+
+            <div
+                id="movieGrid"
+                class="movie-grid"
+            >
+                <!-- Movies inserted using JavaScript -->
+            </div>
+
+        </section>
+
+
+        <!-- ========================================= -->
+        <!-- MOVIE NOT FOUND -->
+        <!-- ========================================= -->
+
+        <section
+            id="notFoundPanel"
+            class="not-found-panel hidden"
+        >
+
+            <div class="not-found-icon">
+                🎬
+            </div>
+
+            <h2>
+                Can't find your movie?
+            </h2>
+
+            <p>
+                No problem. Type the movie title below
+                and rate it. We'll add it to the database
+                automatically.
+            </p>
+
+            <div class="new-movie-box">
+
+                <input
+                    type="text"
+                    id="newMovieTitle"
+                    placeholder="Enter movie title..."
+                >
+
+            </div>
+
+            <div class="rating-title">
+                Your Rating
+            </div>
+
+            <div
+                id="newMovieStars"
+                class="rating-stars"
+            >
+
+                <button data-rating="1">★</button>
+                <button data-rating="2">★</button>
+                <button data-rating="3">★</button>
+                <button data-rating="4">★</button>
+                <button data-rating="5">★</button>
+
+            </div>
+
+            <div
+                id="newMovieRatingValue"
+                class="rating-value"
+            >
+                Select a rating
+            </div>
+
+            <button
+                id="addMovieBtn"
+                class="primary-btn"
+            >
+                Add Movie & Rate
+            </button>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- ========================================= -->
+    <!-- RATING MODAL -->
+    <!-- ========================================= -->
+
+    <div
+        id="ratingModal"
+        class="modal hidden"
+    >
+
+        <div class="modal-card">
+
+            <button
+                id="closeModal"
+                class="modal-close"
+            >
+                ×
+            </button>
+
+            <div class="modal-film-icon">
+                🎬
+            </div>
+
+            <p class="modal-label">
+                YOUR RATING
+            </p>
+
+            <h2 id="selectedMovieTitle">
+                Movie
+            </h2>
+
+            <div
+                id="existingMovieStars"
+                class="rating-stars large"
+            >
+
+                <button data-rating="1">★</button>
+                <button data-rating="2">★</button>
+                <button data-rating="3">★</button>
+                <button data-rating="4">★</button>
+                <button data-rating="5">★</button>
+
+            </div>
+
+            <div
+                id="existingRatingValue"
+                class="rating-value"
+            >
+                Select a rating
+            </div>
+
+            <button
+                id="submitRatingBtn"
+                class="primary-btn"
+            >
+                Submit Rating
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================= -->
+    <!-- TOAST -->
+    <!-- ========================================= -->
+
+    <div
+        id="toast"
+        class="toast"
+    >
+    </div>
+
+
+    <script src="/static/js/movies.js"></script>
+
+</body>
+
+</html>

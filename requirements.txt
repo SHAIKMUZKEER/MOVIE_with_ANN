@@ -4,6 +4,7 @@ matplotlib
 seaborn 
 scikit-learn 
 fastapi 
+Jinja2
 tensorflow
 python-dotenv
 mysql-connector-python
@@ -12,3 +13,5 @@ sqlalchemy
 pymysql
 pydantic
 email-validator
+pyjwt  ## for verification of jwt token
+pwdlib[argon2] ## for password hasing 

@@ -1,96 +1,130 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException,
+    status
+)
+
 from sqlalchemy.orm import Session
-import sys
-from src.exception import CustomException
+
 from src.database.connection import get_db
-from src.database.models import Rating, User, Movie
-from src.schemas import RatingCreate, RatingResponse
+from src.database.models import User
+
+from src.schemas import (
+    RatingCreate,
+    RatingResponse, 
+    BulkRatingCreate
+)
+
+from src.services.auth_service import (
+    get_current_user
+)
+
+from src.services.rating_service import (
+    create_rating
+)
+from src.services.rating_service import (
+    create_bulk_ratings
+)
+
 from src.logger import logging
+
 
 router = APIRouter(
     prefix="/ratings",
     tags=["Ratings"]
 )
 
-logging.info("enters in rating_route file")
+
+logging.info(
+    "enters in rating_route file"
+)
 
 @router.post(
     "/",
     response_model=RatingResponse,
     status_code=status.HTTP_201_CREATED
 )
-def create_rating(
+def create_single_rating(
     rating: RatingCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
-    #Check whether the user exists
-    user = (
-        db.query(User)
-        .filter(User.user_id == rating.user_id)
-        .first()
-    )
 
     try:
 
-        if not user:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="User not found"
-            )
-    except HTTPException as e:
-        print(CustomException(e , sys))
-
-    #Check whether the movie exists
-    movie = (
-        db.query(Movie)
-        .filter(Movie.movie_id == rating.movie_id)
-        .first()
-    )
-
-    try:
-        if not movie:
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail="Movie not found"
-                )
-    except HTTPException as e:
-        print(CustomException(e , sys))
-
-    #Check whether this user has already rated this movie
-    existing_rating = (
-        db.query(Rating)
-        .filter(
-            Rating.user_id == rating.user_id,
-            Rating.movie_id == rating.movie_id
+        new_rating = create_rating(
+            db=db,
+            user_id=current_user.user_id,
+            title=rating.title,
+            ratings=rating.ratings
         )
-        .first()
-    )
 
-    try:
-        if existing_rating:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="User has already rated this movie"
-                )
-    except HTTPException as e: 
-        print(CustomException(e , sys))
+        return new_rating
 
-    #Create new rating (Fixed attribute name: rating.ratings)
-    new_rating = Rating(
-        user_id=rating.user_id,
-        movie_id=rating.movie_id,
-        ratings=rating.ratings
-    )
+    except ValueError as e:
 
-    try:
-        db.add(new_rating)
-        db.commit()
-        db.refresh(new_rating)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+
     except Exception as e:
+
         db.rollback()
+
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to create rating: {str(e)}"
+            detail="Failed to create rating"
         )
 
-    return new_rating
+# PHASE 6
+# MULTIPLE MOVIE RATINGS
+
+@router.post(
+    "/bulk",
+    status_code=status.HTTP_201_CREATED
+)
+def create_bulk_movie_ratings(
+    rating_data: BulkRatingCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+
+    try:
+
+        if not rating_data.ratings:
+
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="No movie ratings provided"
+            )
+
+        user_id = current_user.user_id
+
+        result = create_bulk_ratings(
+            db=db,
+            user_id=user_id,
+            ratings_data=rating_data.ratings
+        )
+
+        return {
+            "message": "Movie ratings processed successfully",
+            "user_id": user_id,
+            "created_count": len(result["created"]),
+            "skipped_count": len(result["skipped"]),
+            "created": result["created"],
+            "skipped": result["skipped"]
+        }
+
+    except HTTPException:
+        raise
+
+    except Exception:
+
+        db.rollback()
+
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to process movie ratings"
+        )

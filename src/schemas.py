@@ -31,10 +31,20 @@ class UserResponse(BaseModel):
     class Config:
         from_attributes = True
 
+#LOGIN SCHEMAS 
+
+# login verificationn
+
+class LoginRequest(BaseModel): 
+    email : EmailStr 
+    password : str
+
+class TokenResponds(BaseModel): 
+    access_token: str
+    token_type: str
+
 
 # MOVIE SCHEMAS
-
-
 class MovieCreate(BaseModel):
     title: str = Field(..., max_length=100)
 
@@ -51,8 +61,7 @@ class MovieResponse(BaseModel):
 
 
 class RatingCreate(BaseModel):
-    user_id: int
-    movie_id: int
+    title : str = Field(..., max_length=100)
     ratings: float = Field(..., ge=0.0, le=5.0)
 
 
@@ -60,7 +69,42 @@ class RatingResponse(BaseModel):
     ratings_id: int  
     user_id: int
     movie_id: int
+    title: str
     ratings: float   
 
     class Config:
         from_attributes = True
+
+
+# PHASE 6 — BULK RATING SCHEMAS
+
+class RatingItem(BaseModel):
+
+    title: str = Field(
+        ...,
+        max_length=100
+    )
+
+    ratings: float = Field(
+        ...,
+        ge=0.0,
+        le=5.0
+    )
+
+
+class BulkRatingCreate(BaseModel):
+
+    ratings: list[RatingItem]
+
+
+# RECOMMENDATION SCHEMAS
+
+class RecommendationItem(BaseModel):
+    movie_id: int
+    title: str
+    predicted_rating: float
+
+
+class RecommendationResponse(BaseModel):
+    user_id: int
+    recommendations: list[RecommendationItem]

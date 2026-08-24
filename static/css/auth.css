@@ -1,0 +1,207 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+
+body {
+
+    min-height: 100vh;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-family:
+        Inter,
+        system-ui,
+        sans-serif;
+
+    color: white;
+
+    background:
+        radial-gradient(
+            circle at 20% 20%,
+            rgba(124, 58, 237, 0.25),
+            transparent 35%
+        ),
+        radial-gradient(
+            circle at 80% 80%,
+            rgba(8, 145, 178, 0.2),
+            transparent 35%
+        ),
+        #05070d;
+}
+
+
+.auth-container {
+
+    width: 100%;
+
+    max-width: 460px;
+
+    padding: 20px;
+}
+
+
+.auth-card {
+
+    padding: 45px 35px;
+
+    border-radius: 30px;
+
+    text-align: center;
+
+    background:
+        rgba(15, 20, 35, 0.78);
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.1);
+
+    backdrop-filter:
+        blur(25px);
+
+    box-shadow:
+        0 40px 100px
+        rgba(0, 0, 0, 0.5);
+}
+
+
+.auth-icon {
+
+    font-size: 55px;
+
+    margin-bottom: 20px;
+}
+
+
+.auth-card h1 {
+
+    font-size: 34px;
+
+    margin-bottom: 10px;
+}
+
+
+.auth-card > p {
+
+    color: #8c93a8;
+
+    line-height: 1.5;
+
+    margin-bottom: 30px;
+}
+
+
+form {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 14px;
+}
+
+
+input {
+
+    width: 100%;
+
+    padding: 15px 17px;
+
+    border-radius: 13px;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.1);
+
+    background:
+        rgba(255, 255, 255, 0.04);
+
+    color: white;
+
+    outline: none;
+
+    font-size: 15px;
+}
+
+
+input:focus {
+
+    border-color:
+        rgba(139, 92, 246, 0.7);
+
+    box-shadow:
+        0 0 25px
+        rgba(139, 92, 246, 0.1);
+}
+
+
+form button {
+
+    padding: 15px;
+
+    border: none;
+
+    border-radius: 13px;
+
+    color: white;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    background:
+        linear-gradient(
+            90deg,
+            #7c3aed,
+            #0891b2
+        );
+
+    transition: 0.3s;
+}
+
+
+form button:hover {
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 15px 35px
+        rgba(124, 58, 237, 0.25);
+}
+
+
+.message {
+
+    min-height: 25px;
+
+    margin-top: 15px;
+
+    color: #06b6d4 !important;
+}
+
+
+.switch {
+
+    margin-top: 25px;
+
+    margin-bottom: 0 !important;
+
+    font-size: 14px;
+}
+
+
+.switch a {
+
+    color: #a78bfa;
+
+    text-decoration: none;
+
+    font-weight: 700;
+}

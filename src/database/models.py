@@ -7,7 +7,8 @@ from sqlalchemy import (
     Numeric,
     DateTime,
     ForeignKey,
-    Enum
+    Enum,
+    UniqueConstraint
 )
 
 from sqlalchemy.orm import relationship
@@ -23,7 +24,8 @@ class User(Base):
     user_id = Column(
         Integer,
         primary_key=True,
-        index=True
+        index=True,
+        autoincrement=True
     )
 
     user_name = Column(
@@ -67,12 +69,14 @@ class Movie(Base):
     movie_id = Column(
         Integer,
         primary_key=True,
-        index=True
+        index=True, 
+        autoincrement=True
     )
 
     title = Column(
         String(100),
-        nullable=False
+        nullable=False,
+        index=True 
     )
 
     created_at = Column(
@@ -89,6 +93,14 @@ class Movie(Base):
 class Rating(Base):
 
     __tablename__ = "ratings"
+    
+    __table_args__ = (
+        UniqueConstraint(
+            "user_id",
+            "movie_id",
+            name="uq_user_movie_rating"
+        ),
+    )
 
     ratings_id = Column(
         Integer,

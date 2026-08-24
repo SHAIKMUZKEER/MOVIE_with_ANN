@@ -1,5 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI , Request
 from src.logger import logging
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.routes.auth_routes import router as user_router
@@ -30,12 +32,68 @@ app.include_router(user_router)
 app.include_router(movie_router)
 app.include_router(rating_router)
 
+app.mount(
+    "/static",
+    StaticFiles(directory="static"),
+    name="static"
+)
+
+
+templates = Jinja2Templates(
+    directory="templates"
+)
 
 @app.get("/")
-def root():
+def root(request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="index.html",
+        context={
+            "request": request
+        }
+    )
 
-    return {
-        "message": "Movie Recommendation API is running"
-    }
+@app.get("/login")
+def login_page(request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="login.html",
+        context={
+            "request": request
+        }
+    )
+
+
+@app.get("/signup")
+def signup_page(request: Request):
+
+    return templates.TemplateResponse(
+        request = request,
+        name = "signup.html",
+        context = {
+            "request": request
+        }
+    )
+
+@app.get("/movies")
+def movies_page(request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="movies.html",
+        context={
+            "request": request
+        }
+    )
+
+@app.get("/recommendations")
+def recommendations_page(request: Request):
+
+    return templates.TemplateResponse(
+        request=request,
+        name="recommendations.html",
+        context={
+            "request": request
+        }
+    )
 
 logging.info("closed the fastapi backend")
