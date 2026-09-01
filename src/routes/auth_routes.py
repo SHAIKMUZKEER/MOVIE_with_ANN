@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from src.logger import logging
 from src.database.connection import get_db
 from src.database.models import User
-from src.schemas import UserCreate, UserResponse , LoginRequest , TokenResponds
+from src.schemas import UserCreate, UserResponse , LoginRequest , TokenResponds , SignupResponse
 from src.services.auth_service import hash_password , verify_password , create_access_token
 
 router = APIRouter(
@@ -15,7 +15,7 @@ logging.info("enters in user_route file")
 
 @router.post(
     "/signup",
-    response_model=UserResponse,
+    response_model=SignupResponse,
     status_code=201
 )
 def create_user(
@@ -65,7 +65,23 @@ def create_user(
         f"User created successfully: {new_user.user_id}"
     )
 
-    return new_user
+# Create JWT automatically after signup
+    access_token = create_access_token(
+        new_user.user_id
+    )
+
+    logging.info(
+        f"JWT created automatically for new user: {new_user.user_id}"
+    )
+
+    return {
+        "user_id": new_user.user_id,
+        "user_name": new_user.user_name,
+        "email": new_user.email,
+        "user_type": new_user.user_type,
+        "access_token": access_token,
+        "token_type": "bearer"
+    }
 
 @router.post("/login",response_model=TokenResponds)
 def login(user : LoginRequest , db : Session = Depends(get_db)): 
@@ -77,6 +93,15 @@ def login(user : LoginRequest , db : Session = Depends(get_db)):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, 
             details = "Invaild email or password"
+        )
+
+    # verify the password 
+    password_valid = verify_password(user.password , existing_user.password_hash)
+
+    if not password_valid:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid email or password"
         )
 
     # create JWT token

@@ -43,6 +43,16 @@ class TokenResponds(BaseModel):
     access_token: str
     token_type: str
 
+class SignupResponse(BaseModel):
+
+    user_id: int
+    user_name: str
+    email: EmailStr
+    user_type: UserType
+
+    access_token: str
+    token_type: str
+
 
 # MOVIE SCHEMAS
 class MovieCreate(BaseModel):
@@ -100,7 +110,6 @@ class BulkRatingCreate(BaseModel):
 # RECOMMENDATION SCHEMAS
 
 class RecommendationItem(BaseModel):
-    movie_id: int
     title: str
     predicted_rating: float
 

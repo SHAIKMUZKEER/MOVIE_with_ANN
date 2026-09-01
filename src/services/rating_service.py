@@ -1,7 +1,11 @@
 from sqlalchemy.orm import Session
 
+from src.pipeline.train_pipeline import train_model
 from src.database.models import Movie, Rating
+from src.schemas import RatingCreate
+from src.exception import CustomException
 
+import sys
 
 # CREATE SINGLE RATING
 
@@ -12,121 +16,123 @@ def create_rating(
     ratings: float
 ):
 
-    # --------------------------------------------------------
-    # 1. Clean movie title
-    # --------------------------------------------------------
+    try:
+        # 1. CLEAN MOVIE TITLE
 
-    title = title.strip()
+        title = title.strip()
 
-    if not title:
-        raise ValueError("Movie title cannot be empty")
+        if not title:
+            raise ValueError("Movie title cannot be empty")
 
-    # --------------------------------------------------------
-    # 2. Search movie by title
-    # --------------------------------------------------------
+        # 2. SEARCH MOVIE BY TITLE
 
-    movie = (
-        db.query(Movie)
-        .filter(Movie.title == title)
-        .first()
-    )
+        movie = (
+            db.query(Movie)
+            .filter(Movie.title == title)
+            .first()
+        )
+        # 3. CREATE MOVIE IF IT DOES NOT EXIST
 
-    # --------------------------------------------------------
-    # 3. Movie doesn't exist
-    # --------------------------------------------------------
+        if movie is None:
 
-    if movie is None:
+            movie = Movie(
+                title=title
+            )
 
-        movie = Movie(
-            title=title
+            db.add(movie)
+
+            # MySQL generates movie_id
+            db.flush()
+
+        # 4. CHECK EXISTING RATING
+
+        existing_rating = (
+            db.query(Rating)
+            .filter(
+                Rating.user_id == user_id,
+                Rating.movie_id == movie.movie_id
+            )
+            .first()
         )
 
-        db.add(movie)
+        if existing_rating:
 
-        # MySQL generates movie_id
-        db.flush()
+            raise ValueError(
+                "User has already rated this movie"
+            )
 
-    # --------------------------------------------------------
-    # 4. Check whether user already rated this movie
-    # --------------------------------------------------------
+        # 5. CREATE RATING
 
-    existing_rating = (
-        db.query(Rating)
-        .filter(
-            Rating.user_id == user_id,
-            Rating.movie_id == movie.movie_id
-        )
-        .first()
-    )
-
-    if existing_rating:
-
-        raise ValueError(
-            "User has already rated this movie"
+        new_rating = Rating(
+            user_id=user_id,
+            movie_id=movie.movie_id,
+            ratings=ratings
         )
 
-    # --------------------------------------------------------
-    # 5. Create rating
-    # --------------------------------------------------------
+        db.add(new_rating)
 
-    new_rating = Rating(
-        user_id=user_id,
-        movie_id=movie.movie_id,
-        ratings=ratings
-    )
+        # 6. SAVE TO MYSQL
 
-    db.add(new_rating)
+        db.commit()
 
-    # --------------------------------------------------------
-    # 6. Save to database
-    # --------------------------------------------------------
+        db.refresh(new_rating)
 
-    db.commit()
+        return new_rating
 
-    db.refresh(new_rating)
+    except ValueError:
+        db.rollback()
+        raise
 
-    return new_rating
+    except Exception as e:
 
+        db.rollback()
 
-# PHASE 6
-# CREATE MULTIPLE RATINGS
+        print(
+            "🔥 SINGLE RATING ERROR:",
+            repr(e)
+        )
+
+        raise CustomException(e, sys)
+
+# CREATE MULTIPLE MOVIE RATINGS
 
 def create_bulk_ratings(
-    db: Session,
+    ratings: list[RatingCreate],
     user_id: int,
-    ratings_data
+    db: Session
 ):
 
-    created_ratings = []
-
-    skipped_ratings = []
+    created = []
+    skipped = []
 
     try:
 
-        for item in ratings_data:
+        # PROCESS EVERY MOVIE RATING
 
-            # 1. Get title and rating
+        for item in ratings:
+
+            # 1. CLEAN TITLE
 
             title = item.title.strip()
 
-            rating_value = item.ratings
-
             if not title:
-                continue
 
-            # 2. Find movie
+                skipped.append({
+                    "title": item.title,
+                    "reason": "Movie title cannot be empty"
+                })
+
+                continue
+            # 2. SEARCH MOVIE BY TITLE
 
             movie = (
                 db.query(Movie)
-                .filter(
-                    Movie.title == title
-                )
+                .filter(Movie.title == title)
                 .first()
             )
 
-            # ------------------------------------------------
-            # 3. Create movie if it doesn't exist
-            # ------------------------------------------------
+            # 3. MOVIE DOES NOT EXIST
+
 
             if movie is None:
 
@@ -139,9 +145,7 @@ def create_bulk_ratings(
                 # MySQL generates movie_id
                 db.flush()
 
-            # ------------------------------------------------
-            # 4. Check duplicate rating
-            # ------------------------------------------------
+            # 4. CHECK WHETHER USER ALREADY RATED MOVIE
 
             existing_rating = (
                 db.query(Rating)
@@ -152,51 +156,75 @@ def create_bulk_ratings(
                 .first()
             )
 
+            # 5. UPDATE EXISTING RATING
+
             if existing_rating:
 
-                skipped_ratings.append(
-                    {
-                        "movie_id": movie.movie_id,
-                        "title": movie.title,
-                        "reason": "Already rated"
-                    }
-                )
+                existing_rating.ratings = item.ratings
 
-                continue
-
-            # ------------------------------------------------
-            # 5. Create rating
-            # ------------------------------------------------
-
-            new_rating = Rating(
-                user_id=user_id,
-                movie_id=movie.movie_id,
-                ratings=rating_value
-            )
-
-            db.add(new_rating)
-
-            created_ratings.append(
-                {
+                created.append({
                     "movie_id": movie.movie_id,
                     "title": movie.title,
-                    "ratings": float(rating_value)
-                }
-            )
+                    "ratings": item.ratings,
+                    "action": "updated"
+                })
 
-        # ----------------------------------------------------
-        # 6. Save all ratings
-        # ----------------------------------------------------
+            # 6. CREATE NEW RATING
+
+            else:
+
+                new_rating = Rating(
+                    user_id=user_id,
+                    movie_id=movie.movie_id,
+                    ratings=item.ratings
+                )
+
+                db.add(new_rating)
+
+                created.append({
+                    "movie_id": movie.movie_id,
+                    "title": movie.title,
+                    "ratings": item.ratings,
+                    "action": "created"
+                })
+
+        # 7. SAVE ALL RATINGS TO MYSQL
 
         db.commit()
 
+        print("✅ Ratings successfully stored in MySQL")
+
+
+        # 8. RETRAIN ANN MODEL
+
+        print("🔄 Starting ANN model retraining...")
+
+        training_result = train_model()
+
+        print("✅ ANN model retraining completed")
+
+
+        # 9. RETURN RESULT
+
         return {
-            "created": created_ratings,
-            "skipped": skipped_ratings
+            "created": created,
+            "skipped": skipped,
+            "training": training_result
         }
 
-    except Exception:
+    except Exception as e:
+
+        # ROLLBACK DATABASE TRANSACTION
 
         db.rollback()
 
-        raise ValueError("Failed to create bulk ratings")
+        print(
+            "🔥 BULK RATING ERROR:",
+            repr(e)
+        )
+
+        print(
+            CustomException(e, sys)
+        )
+
+        raise

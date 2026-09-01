@@ -1,9 +1,4 @@
-from fastapi import (
-    APIRouter,
-    Depends,
-    HTTPException,
-    status
-)
+from fastapi import (APIRouter,Depends,HTTPException,status)
 
 from sqlalchemy.orm import Session
 
@@ -21,7 +16,7 @@ from src.services.auth_service import (
 )
 
 from src.services.rating_service import (
-    create_rating
+    create_rating,
 )
 from src.services.rating_service import (
     create_bulk_ratings
@@ -93,6 +88,8 @@ def create_bulk_movie_ratings(
 
     try:
 
+        # 1. CHECK RATINGS
+
         if not rating_data.ratings:
 
             raise HTTPException(
@@ -100,13 +97,19 @@ def create_bulk_movie_ratings(
                 detail="No movie ratings provided"
             )
 
+        # 2. GET USER ID FROM JWT
+
         user_id = current_user.user_id
+
+        # 3. SEND RATINGS TO SERVICE
 
         result = create_bulk_ratings(
             db=db,
             user_id=user_id,
-            ratings_data=rating_data.ratings
+            ratings=rating_data.ratings
         )
+
+        # 4. RETURN RESPONSE
 
         return {
             "message": "Movie ratings processed successfully",
@@ -114,17 +117,23 @@ def create_bulk_movie_ratings(
             "created_count": len(result["created"]),
             "skipped_count": len(result["skipped"]),
             "created": result["created"],
-            "skipped": result["skipped"]
+            "skipped": result["skipped"],
+            "training": result["training"]
         }
 
     except HTTPException:
         raise
 
-    except Exception:
+    except Exception as e:
 
         db.rollback()
 
+        print(
+            "🔥 BULK ROUTE ERROR:",
+            repr(e)
+        )
+
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to process movie ratings"
+            detail=str(e)
         )

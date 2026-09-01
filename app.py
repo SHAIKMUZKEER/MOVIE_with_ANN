@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from src.routes.auth_routes import router as user_router
 from src.routes.movie_routes import router as movie_router 
 from src.routes.rating_routes import router as rating_router
+from src.routes.recommendation_routes import router as recommendation_router
 
 
 logging.info("enters into app.py file")
@@ -31,6 +32,7 @@ app.add_middleware(
 app.include_router(user_router)
 app.include_router(movie_router)
 app.include_router(rating_router)
+app.include_router(recommendation_router)
 
 app.mount(
     "/static",
