@@ -117,3 +117,43 @@ class RecommendationItem(BaseModel):
 class RecommendationResponse(BaseModel):
     user_id: int
     recommendations: list[RecommendationItem]
+
+
+# FORGOT PASSWORD
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+
+# VERIFY OTP
+
+class VerifyOTPRequest(BaseModel):
+    email: EmailStr
+
+    otp: str = Field(
+        ...,
+        min_length=6,
+        max_length=6
+    )
+
+
+# RESET PASSWORD
+
+class ResetPasswordRequest(BaseModel):
+    email: EmailStr
+
+    otp: str = Field(
+        ...,
+        min_length=6,
+        max_length=6
+    )
+
+    new_password: str = Field(
+        ...,
+        min_length=6
+    )
+
+    confirm_password: str = Field(
+        ...,
+        min_length=6
+    )

@@ -8,6 +8,7 @@ from sqlalchemy import (
     DateTime,
     ForeignKey,
     Enum,
+    Boolean,
     UniqueConstraint
 )
 
@@ -61,6 +62,11 @@ class User(Base):
         back_populates="user"
     )
 
+    password_reset_tokens = relationship(
+        "PasswordReset",
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )   
 
 class Movie(Base):
 
@@ -134,4 +140,49 @@ class Rating(Base):
     movie = relationship(
         "Movie",
         back_populates="ratings"
+    )
+
+class PasswordReset(Base):
+
+    __tablename__ = "password_reset_tokens"
+
+    reset_id = Column(
+        Integer,
+        primary_key=True,
+        autoincrement=True
+    )
+
+    user_id = Column(
+        Integer,
+        ForeignKey(
+            "users.user_id",
+            ondelete="CASCADE"
+        ),
+        nullable=False
+    )
+
+    otp_hash = Column(
+        String(64),
+        nullable=False
+    )
+
+    expires_at = Column(
+        DateTime,
+        nullable=False
+    )
+
+    is_used = Column(
+        Boolean,
+        default=False,
+        nullable=False
+    )
+
+    created_at = Column(
+        DateTime,
+        default=datetime.utcnow
+    )
+
+    user = relationship(
+        "User",
+        back_populates="password_reset_tokens"
     )
