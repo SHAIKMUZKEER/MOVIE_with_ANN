@@ -3,7 +3,7 @@ from fastapi import (APIRouter,Depends,HTTPException,status)
 from sqlalchemy.orm import Session
 
 from src.database.connection import get_db
-from src.database.models import User
+from src.database.models import User , Rating
 
 from src.schemas import (
     RatingCreate,
@@ -137,3 +137,19 @@ def create_bulk_movie_ratings(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=str(e)
         )
+
+@router.get("/my-status")
+def get_my_rating_status(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    has_ratings = (
+        db.query(Rating)
+        .filter(Rating.user_id == current_user.user_id)
+        .first()
+        is not None
+    )
+
+    return {
+        "has_ratings": has_ratings
+    }

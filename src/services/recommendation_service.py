@@ -4,9 +4,7 @@ from src.database.models import Rating, Movie
 from src.pipeline.predict_pipeline import predict_ratings
 
 
-# =========================================================
 # GET MOVIES ALREADY RATED BY USER
-# =========================================================
 
 def get_watched_movie_ids(
     db: Session,
@@ -27,18 +25,14 @@ def get_watched_movie_ids(
     }
 
 
-# =========================================================
 # GET RECOMMENDATIONS
-# =========================================================
 
 def get_recommendations(
     db: Session,
     user_id: int
 ):
 
-    # -----------------------------------------------------
     # 1. FIND MOVIES RATED BY USER
-    # -----------------------------------------------------
 
     watched_movie_ids = get_watched_movie_ids(
         db=db,
@@ -46,9 +40,7 @@ def get_recommendations(
     )
 
 
-    # -----------------------------------------------------
     # 2. NEW USER CHECK
-    # -----------------------------------------------------
 
     if not watched_movie_ids:
 
@@ -58,9 +50,7 @@ def get_recommendations(
         )
 
 
-    # -----------------------------------------------------
     # 3. FIND MOVIES NOT YET RATED BY USER
-    # -----------------------------------------------------
 
     candidate_movies = (
         db.query(Movie)
@@ -73,28 +63,21 @@ def get_recommendations(
     )
 
 
-    # -----------------------------------------------------
     # 4. CHECK WHETHER UNWATCHED MOVIES EXIST
-    # -----------------------------------------------------
 
     if not candidate_movies:
 
         return []
 
 
-    # -----------------------------------------------------
     # 5. EXTRACT MOVIE IDs
-    # -----------------------------------------------------
 
     candidate_movie_ids = [
         movie.movie_id
         for movie in candidate_movies
     ]
 
-
-    # -----------------------------------------------------
     # 6. SEND USER + MOVIES TO ANN
-    # -----------------------------------------------------
 
     predictions = predict_ratings(
         user_id=user_id,
@@ -102,9 +85,7 @@ def get_recommendations(
     )
 
 
-    # -----------------------------------------------------
     # 7. CREATE RECOMMENDATION RESULT
-    # -----------------------------------------------------
 
     recommendations = []
 
@@ -124,18 +105,13 @@ def get_recommendations(
         )
 
 
-    # -----------------------------------------------------
     # 8. SORT BY PREDICTED RATING
-    # -----------------------------------------------------
 
     recommendations.sort(
         key=lambda x: x["predicted_rating"],
         reverse=True
     )
 
-
-    # -----------------------------------------------------
     # 9. RETURN TOP 3
-    # -----------------------------------------------------
 
     return recommendations[:3]

@@ -1,11 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from src.utils import get_current_user
+
 from src.database.connection import get_db
+from src.database.models import User
 from src.schemas import RecommendationResponse
-from src.services.recommendation_service import (
-    get_recommendations
-)
+from src.services.auth_service import get_current_user
+from src.services.recommendation_service import get_recommendations
 
 
 router = APIRouter(
@@ -18,13 +18,15 @@ router = APIRouter(
     "/",
     response_model=RecommendationResponse
 )
-
 def recommendations(
     db: Session = Depends(get_db),
-    user_id: int = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
 
     try:
+
+        # Get user_id from JWT authenticated user
+        user_id = current_user.user_id
 
         recommendations = get_recommendations(
             db=db,
@@ -39,13 +41,13 @@ def recommendations(
     except ValueError as e:
 
         raise HTTPException(
-            status_code=400,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)
         )
 
     except Exception as e:
 
         raise HTTPException(
-            status_code=500,
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Recommendation failed: {str(e)}"
         )
