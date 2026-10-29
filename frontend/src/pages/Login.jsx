@@ -6,7 +6,7 @@ import api, {
   getRatingStatus,
 } from '../services/api'
 
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../context/useAuth'
 
 function Login() {
   const navigate = useNavigate()
@@ -119,11 +119,11 @@ function Login() {
   }
 
   return (
-    <main className="min-h-screen bg-[#080808] px-6 py-12 text-white">
+    <main className="min-h-screen px-6 py-12 text-white">
 
       <div className="mx-auto flex min-h-[calc(100vh-6rem)] max-w-md items-center">
 
-        <div className="w-full">
+        <div className="glass-surface w-full p-6 sm:p-10">
 
           {/* Back to Home */}
 
@@ -292,7 +292,7 @@ function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-xl bg-white px-5 py-3.5 font-semibold text-black transition-all duration-300 hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50"
+              className="button-primary w-full font-semibold"
             >
               {loading ? 'Signing in...' : 'Sign in'}
             </button>

@@ -62,11 +62,11 @@ function VerifyOTP() {
   }
 
   return (
-    <main className="min-h-screen bg-[#080808] px-6 py-12 text-white">
+    <main className="min-h-screen px-6 py-12 text-white">
 
       <div className="mx-auto flex min-h-[calc(100vh-6rem)] max-w-md items-center">
 
-        <div className="w-full">
+        <div className="glass-surface w-full p-6 sm:p-10">
 
           {/* Back */}
           <Link
@@ -146,7 +146,7 @@ function VerifyOTP() {
             <button
               type="submit"
               disabled={loading || otp.length !== 6}
-              className="w-full rounded-xl bg-white px-5 py-3.5 font-semibold text-black transition-all duration-300 hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50"
+              className="button-primary w-full font-semibold"
             >
               {loading ? 'Verifying...' : 'Verify code'}
             </button>

@@ -60,7 +60,9 @@ function Movies() {
   }
 
   useEffect(() => {
-    fetchMovies()
+    const timer = setTimeout(() => fetchMovies(), 0)
+
+    return () => clearTimeout(timer)
   }, [])
 
   const handleSearch = (event) => {
@@ -75,7 +77,7 @@ function Movies() {
   }
 
   return (
-    <section className="min-h-[calc(100vh-5rem)] bg-[#080808] px-5 py-12 text-white sm:px-8 sm:py-14 lg:px-10 lg:py-16">
+    <section className="min-h-[calc(100vh-5rem)] px-5 py-12 text-white sm:px-8 sm:py-14 lg:px-10 lg:py-16">
 
       <div className="mx-auto max-w-7xl">
 

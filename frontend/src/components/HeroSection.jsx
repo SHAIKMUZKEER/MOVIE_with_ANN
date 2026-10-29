@@ -3,26 +3,11 @@ import { Link } from 'react-router'
 
 function HeroSection() {
   return (
-    <section className="relative min-h-[calc(100vh-5rem)] overflow-hidden bg-[#080808]">
+    <section className="relative min-h-[calc(100vh-5rem)] overflow-hidden">
 
       {/* ========================================= */}
       {/* CINEMATIC BACKGROUND */}
       {/* ========================================= */}
-
-      <div className="pointer-events-none absolute inset-0">
-
-        {/* Main soft glow */}
-        <div className="absolute left-1/2 top-1/3 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-white/[0.025] blur-[120px] sm:h-[650px] sm:w-[650px]" />
-
-        {/* Right cinematic rings */}
-        <div className="absolute -right-32 top-24 h-[420px] w-[420px] rounded-full border border-white/[0.06] sm:h-[550px] sm:w-[550px]" />
-
-        <div className="absolute -right-20 top-36 h-[300px] w-[300px] rounded-full border border-white/[0.05] sm:h-[400px] sm:w-[400px]" />
-
-        {/* Bottom glow */}
-        <div className="absolute bottom-[-200px] left-1/3 h-[450px] w-[450px] rounded-full bg-white/[0.015] blur-[100px]" />
-
-      </div>
 
       {/* ========================================= */}
       {/* HERO CONTENT */}
@@ -176,7 +161,7 @@ function HeroSection() {
 
         <div className="border-t border-white/[0.08] pt-10 sm:pt-14">
 
-          <div className="grid gap-10 sm:grid-cols-3 sm:gap-8">
+          <div className="grid gap-8 sm:grid-cols-2 sm:gap-8 lg:grid-cols-4">
 
             {/* STEP 01 */}
 
@@ -268,6 +253,18 @@ function HeroSection() {
                 Get personalized recommendations.
               </p>
 
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.7, delay: 0.3 }}
+            >
+              <p className="text-2xl font-semibold text-white">04</p>
+              <p className="mt-4 max-w-xs text-sm leading-6 text-white/55">
+                Receive personalized recommendations.
+              </p>
             </motion.div>
 
           </div>

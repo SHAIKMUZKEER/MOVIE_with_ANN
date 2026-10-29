@@ -2,7 +2,7 @@ import { Link } from 'react-router'
 
 function Footer() {
   return (
-    <footer className="border-t border-white/[0.08] bg-[#070707] text-white">
+    <footer id="about" className="border-t border-white/[0.08] bg-black/20 text-white backdrop-blur-sm">
 
       <div className="mx-auto max-w-7xl px-6 py-16 lg:px-10">
 

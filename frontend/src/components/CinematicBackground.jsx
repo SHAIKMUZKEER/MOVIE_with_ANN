@@ -1,41 +1,46 @@
 import { motion } from 'motion/react'
+import { useEffect, useState } from 'react'
 import CinematicScene from './CinematicScene'
 
+import movieCollage from '../images/anika-de-klerk-dWYjy9zIiF8-unsplash.jpg'
+import filmReel from '../images/tyson-moultrie-BQTHOGNHo08-unsplash.jpg'
+import cosmicCinema from '../images/ChatGPT Image Sep 15, 2026, 10_11_54 PM.png'
+
+const slideshowImages = [movieCollage, filmReel, cosmicCinema]
+
 function CinematicBackground() {
+  const [activeImage, setActiveImage] = useState(0)
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      setActiveImage((currentImage) => (currentImage + 1) % slideshowImages.length)
+    }, 5000)
+
+    return () => window.clearInterval(intervalId)
+  }, [])
 
   return (
-
     <div
-      className="
-        fixed
-        inset-0
-        z-0
-        overflow-hidden
-        bg-[#02030a]
-      "
+      aria-hidden="true"
+      className="cinematic-background pointer-events-none fixed inset-0 z-0 overflow-hidden"
     >
-
-      {/* =================================================
-          3D WORLD
-      ================================================= */}
-
-      <div
-        className="
-          absolute
-          inset-0
-          z-0
-        "
-      >
-
-        <CinematicScene />
-
+      <div className="absolute inset-0 z-0 bg-[#050817]">
+        {slideshowImages.map((image, index) => (
+          <img
+            key={image}
+            src={image}
+            alt=""
+            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-[1400ms] ease-in-out ${
+              activeImage === index ? 'opacity-100' : 'opacity-0'
+            }`}
+          />
+        ))}
       </div>
-
-
-      {/* =================================================
-          BLUE NEBULA
-      ================================================= */}
-
+      <div className="absolute inset-0 z-[1] bg-[linear-gradient(180deg,rgba(2,4,12,0.7)_0%,rgba(2,4,12,0.28)_42%,rgba(2,4,12,0.72)_100%)]" />
+      <div className="absolute inset-0 z-[2] bg-[radial-gradient(circle_at_center,transparent_12%,rgba(1,3,12,0.46)_100%)]" />
+      <div className="absolute inset-0 z-[3] opacity-35">
+        <CinematicScene />
+      </div>
       <motion.div
         animate={{
           x: [0, 40, -20, 0],
@@ -47,27 +52,8 @@ function CinematicBackground() {
           repeat: Infinity,
           ease: 'easeInOut',
         }}
-        className="
-          pointer-events-none
-          absolute
-          left-[-15%]
-          top-[5%]
-          z-10
-          h-[500px]
-          w-[500px]
-          rounded-full
-          bg-blue-600/[0.09]
-          blur-[140px]
-          sm:h-[700px]
-          sm:w-[700px]
-        "
+        className="absolute left-[-15%] top-[5%] z-10 h-[500px] w-[500px] rounded-full bg-blue-600/[0.08] blur-[140px] sm:h-[700px] sm:w-[700px]"
       />
-
-
-      {/* =================================================
-          PURPLE NEBULA
-      ================================================= */}
-
       <motion.div
         animate={{
           x: [0, -45, 25, 0],
@@ -79,27 +65,8 @@ function CinematicBackground() {
           repeat: Infinity,
           ease: 'easeInOut',
         }}
-        className="
-          pointer-events-none
-          absolute
-          right-[-15%]
-          top-[8%]
-          z-10
-          h-[500px]
-          w-[500px]
-          rounded-full
-          bg-purple-600/[0.10]
-          blur-[140px]
-          sm:h-[700px]
-          sm:w-[700px]
-        "
+        className="absolute right-[-15%] top-[8%] z-10 h-[500px] w-[500px] rounded-full bg-violet-600/[0.08] blur-[140px] sm:h-[700px] sm:w-[700px]"
       />
-
-
-      {/* =================================================
-          PINK ATMOSPHERE
-      ================================================= */}
-
       <motion.div
         animate={{
           x: [0, 35, -25, 0],
@@ -111,129 +78,19 @@ function CinematicBackground() {
           repeat: Infinity,
           ease: 'easeInOut',
         }}
-        className="
-          pointer-events-none
-          absolute
-          bottom-[-20%]
-          right-[5%]
-          z-10
-          h-[450px]
-          w-[450px]
-          rounded-full
-          bg-fuchsia-600/[0.07]
-          blur-[140px]
-          sm:h-[600px]
-          sm:w-[600px]
-        "
+        className="absolute bottom-[-20%] right-[5%] z-10 h-[450px] w-[450px] rounded-full bg-fuchsia-600/[0.04] blur-[140px] sm:h-[600px] sm:w-[600px]"
       />
-
-
-      {/* =================================================
-          CINEMATIC LIGHT ARC
-      ================================================= */}
-
-      <motion.div
-        animate={{
-          rotate: [0, 3, -2, 0],
-          x: [0, 20, -10, 0],
-        }}
-        transition={{
-          duration: 18,
-          repeat: Infinity,
-          ease: 'easeInOut',
-        }}
-        className="
-          pointer-events-none
-          absolute
-          left-[-20%]
-          top-[38%]
-          z-10
-          h-[250px]
-          w-[140%]
-          rotate-[-8deg]
-          rounded-[50%]
-          border
-          border-indigo-400/[0.15]
-          blur-[1px]
-        "
-      />
-
-
-      {/* =================================================
-          SECOND LIGHT ARC
-      ================================================= */}
-
-      <motion.div
-        animate={{
-          rotate: [0, -3, 2, 0],
-          x: [0, -15, 10, 0],
-        }}
-        transition={{
-          duration: 22,
-          repeat: Infinity,
-          ease: 'easeInOut',
-        }}
-        className="
-          pointer-events-none
-          absolute
-          left-[-20%]
-          top-[42%]
-          z-10
-          h-[200px]
-          w-[140%]
-          rotate-[-8deg]
-          rounded-[50%]
-          border
-          border-purple-400/[0.10]
-          blur-[2px]
-        "
-      />
-
-
-      {/* =================================================
-          SUBTLE GRID
-      ================================================= */}
-
       <div
-        className="
-          pointer-events-none
-          absolute
-          inset-0
-          z-10
-          opacity-[0.025]
-        "
+        className="absolute inset-0 z-10 opacity-[0.025]"
         style={{
-          backgroundImage:
-            'linear-gradient(rgba(255,255,255,0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.2) 1px, transparent 1px)',
-
-          backgroundSize:
-            '80px 80px',
-
-          maskImage:
-            'radial-gradient(circle at center, black, transparent 72%)',
-
-          WebkitMaskImage:
-            'radial-gradient(circle at center, black, transparent 72%)',
+          backgroundImage: 'linear-gradient(rgba(255,255,255,0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.2) 1px, transparent 1px)',
+          backgroundSize: '80px 80px',
+          maskImage: 'radial-gradient(circle at center, black, transparent 72%)',
+          WebkitMaskImage: 'radial-gradient(circle at center, black, transparent 72%)',
         }}
       />
-
-
-      {/* =================================================
-          VIGNETTE
-      ================================================= */}
-
-      <div
-        className="
-          pointer-events-none
-          absolute
-          inset-0
-          z-20
-          bg-[radial-gradient(circle_at_center,transparent_35%,rgba(0,0,0,0.50)_100%)]
-        "
-      />
-
+      <div className="absolute inset-0 z-20 bg-[radial-gradient(circle_at_center,transparent_30%,rgba(1,3,12,0.52)_100%)]" />
     </div>
-
   )
 }
 

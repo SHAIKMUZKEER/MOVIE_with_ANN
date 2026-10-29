@@ -3,7 +3,9 @@ import { motion } from 'motion/react'
 import { useNavigate } from 'react-router'
 
 import api from '../services/api'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../context/useAuth'
+import GlassCard from '../components/GlassCard'
+import PageTransition from '../components/PageTransition'
 
 function Profile() {
   const navigate = useNavigate()
@@ -66,9 +68,9 @@ function Profile() {
   }
 
   return (
-    <section className="min-h-[calc(100vh-5rem)] bg-[#080808] px-6 py-16 text-white lg:px-10">
+    <section className="min-h-[calc(100vh-5rem)] px-6 py-16 text-white lg:px-10">
 
-      <div className="mx-auto max-w-5xl">
+      <PageTransition className="mx-auto max-w-5xl">
 
         {/* ========================================= */}
         {/* HEADER */}
@@ -158,7 +160,7 @@ function Profile() {
             {/* USER CARD */}
             {/* ===================================== */}
 
-            <div className="rounded-3xl border border-white/[0.08] bg-white/[0.025] p-8 sm:p-10">
+            <GlassCard className="p-8 sm:p-10">
 
               <div className="flex flex-col gap-8 sm:flex-row sm:items-center">
 
@@ -195,14 +197,14 @@ function Profile() {
 
               </div>
 
-            </div>
+            </GlassCard>
 
 
             {/* ===================================== */}
             {/* ACCOUNT INFORMATION */}
             {/* ===================================== */}
 
-            <div className="mt-6 rounded-3xl border border-white/[0.08] bg-white/[0.025] p-8">
+            <GlassCard className="mt-6 p-8">
 
               <p className="text-xs uppercase tracking-[0.3em] text-white/30">
                 Account Information
@@ -276,7 +278,7 @@ function Profile() {
 
               </div>
 
-            </div>
+            </GlassCard>
 
 
             {/* ===================================== */}
@@ -338,7 +340,7 @@ function Profile() {
               <button
                 type="button"
                 onClick={handleLogout}
-                className="rounded-full bg-gray-700 px-7 py-3.5 text-sm font-bold text-white transition-all duration-300 hover:bg-gray-600"
+                className="button-danger text-sm font-bold"
               >
                 Sign Out
               </button>
@@ -349,7 +351,7 @@ function Profile() {
 
         )}
 
-      </div>
+      </PageTransition>
 
     </section>
   )

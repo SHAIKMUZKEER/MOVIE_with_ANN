@@ -7,6 +7,19 @@ import {
 import { useRef } from 'react'
 import * as THREE from 'three'
 
+function FilmFrames() {
+  return (
+    <group position={[-2.8, 0.8, -1.5]} rotation={[0.2, 0.4, -0.25]}>
+      {Array.from({ length: 5 }).map((_, index) => (
+        <mesh key={index} position={[index * 0.62, Math.sin(index) * 0.08, 0]}>
+          <planeGeometry args={[0.42, 0.28]} />
+          <meshBasicMaterial color="#64748b" transparent opacity={0.12} side={THREE.DoubleSide} />
+        </mesh>
+      ))}
+    </group>
+  )
+}
+
 
 /* =========================================================
    ENERGY ORB
@@ -113,7 +126,7 @@ function EnergyOrb() {
           <meshStandardMaterial
             color="#15104f"
             emissive="#6366f1"
-            emissiveIntensity={3}
+            emissiveIntensity={2.2}
             metalness={0.85}
             roughness={0.16}
           />
@@ -336,6 +349,7 @@ function CinematicObjects() {
       />
 
       <EnergyParticles />
+      <FilmFrames />
 
     </>
 
@@ -367,14 +381,14 @@ function CameraRig() {
       THREE.MathUtils.lerp(
         state.camera.position.x,
         targetX,
-        0.025,
+        0.018,
       )
 
     state.camera.position.y =
       THREE.MathUtils.lerp(
         state.camera.position.y,
         targetY,
-        0.025,
+        0.018,
       )
 
     state.camera.lookAt(
@@ -452,7 +466,7 @@ function CinematicScene() {
         factor={2.2}
         saturation={0}
         fade
-        speed={0.25}
+        speed={0.18}
       />
 
 
@@ -461,7 +475,7 @@ function CinematicScene() {
       ================================================= */}
 
       <Sparkles
-        count={220}
+        count={150}
         scale={[14, 9, 10]}
         size={1.5}
         speed={0.22}

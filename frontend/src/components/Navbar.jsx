@@ -1,17 +1,89 @@
-import { useState } from 'react'
-import { Link, useLocation } from 'react-router'
+import { useEffect, useRef, useState } from 'react'
+import { Link, useLocation, useNavigate } from 'react-router'
 import { motion, AnimatePresence } from 'motion/react'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../context/useAuth'
 
 function Navbar() {
   const { isAuthenticated, logout } = useAuth()
   const location = useLocation()
+  const navigate = useNavigate()
 
   const [menuOpen, setMenuOpen] = useState(false)
+  const headerRef = useRef(null)
 
   const closeMenu = () => {
     setMenuOpen(false)
   }
+
+  const handleNavClick = (path, e) => {
+    closeMenu()
+
+    if (path === '/') {
+      if (location.pathname === '/') {
+        e?.preventDefault()
+        if (location.hash) {
+          navigate('/', { replace: true })
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      }
+    } else if (path.startsWith('/#')) {
+      const id = path.replace('/#', '')
+      if (location.pathname === '/') {
+        e?.preventDefault()
+        navigate(path)
+        const el = document.getElementById(id)
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth' })
+        }
+      }
+    }
+  }
+
+  useEffect(() => {
+    if (location.hash) {
+      const id = location.hash.replace('#', '')
+      const scrollToElement = () => {
+        const el = document.getElementById(id)
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth' })
+          return true
+        }
+        return false
+      }
+
+      if (!scrollToElement()) {
+        const timer = setTimeout(scrollToElement, 100)
+        return () => clearTimeout(timer)
+      }
+    }
+  }, [location.pathname, location.hash])
+
+  const isLinkActive = (path) => {
+    if (path.startsWith('/#')) {
+      return location.pathname + location.hash === path
+    }
+    return location.pathname === path && !location.hash
+  }
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') setMenuOpen(false)
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [])
+
+  useEffect(() => {
+    const handlePointerDown = (event) => {
+      if (menuOpen && !headerRef.current?.contains(event.target)) {
+        setMenuOpen(false)
+      }
+    }
+
+    document.addEventListener('pointerdown', handlePointerDown)
+    return () => document.removeEventListener('pointerdown', handlePointerDown)
+  }, [menuOpen])
 
   const handleLogout = () => {
     closeMenu()
@@ -57,7 +129,7 @@ function Navbar() {
     : publicLinks
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/[0.08] bg-[#080808]/90 backdrop-blur-xl">
+    <header ref={headerRef} className="sticky top-0 z-50 border-b border-white/[0.08] bg-[#050817]/70 backdrop-blur-2xl">
 
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-5 sm:px-6 lg:px-10">
 
@@ -67,11 +139,11 @@ function Navbar() {
 
         <Link
           to="/"
-          onClick={closeMenu}
-          className="flex items-center gap-3"
+          onClick={(e) => handleNavClick('/', e)}
+          className="group flex items-center gap-3"
         >
 
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-lg font-bold text-black">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-300 to-blue-500 text-lg font-bold text-slate-950 shadow-[0_0_30px_rgba(99,102,241,0.28)] transition-transform duration-500 group-hover:rotate-6">
             M
           </div>
 
@@ -97,13 +169,13 @@ function Navbar() {
 
           {links.map((link) => {
 
-            const isActive =
-              link.path === location.pathname
+            const isActive = isLinkActive(link.path)
 
             return (
               <Link
                 key={link.name}
                 to={link.path}
+                onClick={(e) => handleNavClick(link.path, e)}
                 className={`rounded-full px-5 py-2.5 text-sm transition-all duration-300 ${
                   isActive
                     ? 'bg-white/[0.08] text-white'
@@ -127,22 +199,32 @@ function Navbar() {
             </button>
           )}
 
-          {/* Login / Get Started */}
+          {/* Login / Signup */}
 
           {!isAuthenticated && (
             <>
               <Link
                 to="/login"
-                className="ml-3 rounded-full px-5 py-3 text-sm text-white/70 transition hover:text-white"
+                onClick={closeMenu}
+                className={`rounded-full px-5 py-2.5 text-sm transition-all duration-300 ${
+                  location.pathname === '/login'
+                    ? 'bg-white/[0.08] text-white'
+                    : 'text-white/60 hover:bg-white/[0.04] hover:text-white'
+                }`}
               >
                 Login
               </Link>
 
               <Link
                 to="/signup"
-                className="rounded-full bg-white px-7 py-3 text-sm font-semibold text-black transition-all duration-300 hover:bg-white/90"
+                onClick={closeMenu}
+                className={`rounded-full border px-5 py-2.5 text-sm font-medium transition-all duration-300 ${
+                  location.pathname === '/signup'
+                    ? 'border-white/30 bg-white/[0.12] text-white'
+                    : 'border-white/15 bg-white/[0.06] text-white hover:border-white/30 hover:bg-white/[0.12]'
+                }`}
               >
-                Get Started
+                Signup
               </Link>
             </>
           )}
@@ -244,8 +326,7 @@ function Navbar() {
 
                 {links.map((link, index) => {
 
-                  const isActive =
-                    link.path === location.pathname
+                  const isActive = isLinkActive(link.path)
 
                   return (
                     <motion.div
@@ -265,7 +346,7 @@ function Navbar() {
 
                       <Link
                         to={link.path}
-                        onClick={closeMenu}
+                        onClick={(e) => handleNavClick(link.path, e)}
                         className={`block rounded-2xl px-4 py-3.5 text-sm transition ${
                           isActive
                             ? 'bg-white/[0.08] text-white'
@@ -299,7 +380,11 @@ function Navbar() {
                     <Link
                       to="/login"
                       onClick={closeMenu}
-                      className="rounded-2xl border border-white/10 px-4 py-3.5 text-center text-sm text-white/70 transition hover:bg-white/[0.05] hover:text-white"
+                      className={`rounded-2xl border px-4 py-3.5 text-center text-sm transition ${
+                        location.pathname === '/login'
+                          ? 'border-white/30 bg-white/[0.08] text-white'
+                          : 'border-white/10 text-white/70 hover:bg-white/[0.05] hover:text-white'
+                      }`}
                     >
                       Login
                     </Link>
@@ -307,9 +392,13 @@ function Navbar() {
                     <Link
                       to="/signup"
                       onClick={closeMenu}
-                      className="rounded-2xl bg-white px-4 py-3.5 text-center text-sm font-semibold text-black transition hover:bg-white/90"
+                      className={`rounded-2xl border px-4 py-3.5 text-center text-sm font-medium transition ${
+                        location.pathname === '/signup'
+                          ? 'border-white/30 bg-white/[0.12] text-white'
+                          : 'border-white/15 bg-white/[0.06] text-white hover:border-white/30 hover:bg-white/[0.12]'
+                      }`}
                     >
-                      Get Started
+                      Signup
                     </Link>
 
                   </div>

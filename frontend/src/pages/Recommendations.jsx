@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'motion/react'
 import { useNavigate } from 'react-router'
 
 import api from '../services/api'
+import LoadingState from '../components/LoadingState'
+import PageTransition from '../components/PageTransition'
 
 function Recommendations() {
   const navigate = useNavigate()
@@ -10,6 +12,7 @@ function Recommendations() {
   const [recommendations, setRecommendations] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [retryCount, setRetryCount] = useState(0)
 
   // --------------------------------------------------
   // LOAD RECOMMENDATIONS
@@ -63,7 +66,7 @@ function Recommendations() {
     }
 
     fetchRecommendations()
-  }, [])
+  }, [retryCount])
 
   // --------------------------------------------------
   // GET MOVIE TITLE
@@ -83,7 +86,7 @@ function Recommendations() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#080808] text-white">
+      <main className="min-h-screen text-white">
 
         <div className="relative mx-auto flex min-h-[70vh] max-w-6xl items-center justify-center px-5 sm:px-8 lg:px-10">
 
@@ -97,7 +100,7 @@ function Recommendations() {
             className="relative w-full max-w-xl text-center"
           >
 
-            <div className="mx-auto mb-6 h-10 w-10 animate-spin rounded-full border border-white/10 border-t-white/70" />
+            <LoadingState label="Finding your recommendations..." />
 
             <p className="text-[10px] uppercase tracking-[0.3em] text-white/30 sm:text-xs">
               MovieAI
@@ -126,7 +129,7 @@ function Recommendations() {
 
   if (error) {
     return (
-      <main className="min-h-screen bg-[#080808] text-white">
+      <main className="min-h-screen text-white">
 
         <div className="mx-auto flex min-h-[70vh] max-w-3xl items-center justify-center px-5 py-12 sm:px-8">
 
@@ -150,8 +153,8 @@ function Recommendations() {
 
             <button
               type="button"
-              onClick={() => window.location.reload()}
-              className="mt-8 w-full rounded-full border border-white/15 px-6 py-3 text-sm font-medium text-white transition hover:bg-white hover:text-black sm:w-auto"
+              onClick={() => setRetryCount((count) => count + 1)}
+              className="button-secondary mt-8 w-full text-sm font-medium sm:w-auto"
             >
               Try Again
             </button>
@@ -170,7 +173,7 @@ function Recommendations() {
 
   if (recommendations.length === 0) {
     return (
-      <main className="min-h-screen bg-[#080808] text-white">
+      <main className="min-h-screen text-white">
 
         <div className="mx-auto flex min-h-[70vh] max-w-3xl items-center justify-center px-5 py-12 sm:px-8">
 
@@ -214,7 +217,7 @@ function Recommendations() {
   // --------------------------------------------------
 
   return (
-    <main className="min-h-screen bg-[#080808] text-white">
+    <main className="min-h-screen text-white">
 
       {/* ============================================== */}
       {/* BACKGROUND ATMOSPHERE */}
@@ -231,7 +234,7 @@ function Recommendations() {
       </div>
 
 
-      <div className="relative mx-auto max-w-7xl px-5 py-12 sm:px-8 sm:py-14 lg:px-10 lg:py-16">
+      <PageTransition className="relative mx-auto max-w-7xl px-5 py-12 sm:px-8 sm:py-14 lg:px-10 lg:py-16">
 
         {/* ============================================== */}
         {/* HEADER */}
@@ -324,7 +327,7 @@ function Recommendations() {
                   whileHover={{
                     y: -6,
                   }}
-                  className="group relative min-h-[320px] overflow-hidden rounded-3xl border border-white/[0.08] bg-white/[0.025] p-5 backdrop-blur-xl transition-colors duration-500 hover:border-white/[0.16] sm:min-h-[360px] sm:p-7"
+                  className="glass-surface group relative min-h-[320px] overflow-hidden p-5 transition-colors duration-500 hover:border-indigo-300/30 sm:min-h-[360px] sm:p-7"
                 >
 
                   {/* Subtle card glow */}
@@ -416,7 +419,7 @@ function Recommendations() {
         </motion.div>
 
 
-      </div>
+      </PageTransition>
 
     </main>
   )
